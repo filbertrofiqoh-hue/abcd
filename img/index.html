@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omega Elektronik Palembang</title>
+<style>
+body{font-family:Arial;margin:0;background:#f5f5f5}
+header{background:#ff5722;color:#fff;padding:10px;display:flex;align-items:center;gap:10px}
+header img{height:35px}
+.search{flex:1}
+.search input{width:100%;padding:10px;border-radius:20px;border:none}
+nav{display:flex;overflow:auto;background:#fff;padding:10px;gap:10px}
+nav button{padding:8px 14px;border:none;background:#eee;border-radius:20px;font-weight:bold}
+.container{padding:10px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{background:#fff;padding:10px;border-radius:12px;position:relative;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.card img{width:100%;height:110px;object-fit:cover;border-radius:8px}
+.price{color:#ff5722;font-weight:bold}
+.old{font-size:12px;text-decoration:line-through;color:#999}
+.badge{position:absolute;top:5px;left:5px;background:red;color:#fff;font-size:10px;padding:3px 6px;border-radius:5px}
+.rating{font-size:11px;color:#ffa500}
+.sold{font-size:11px;color:#777}
+.btn{background:#25D366;color:#fff;padding:6px;border-radius:5px;display:block;margin-top:5px;text-decoration:none;text-align:center;font-size:12px}
+.banner{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.banner div{background:#fff;border-radius:10px;padding:5px;text-align:center}
+.banner img{width:40px;height:40px}
+.footer{background:#222;color:#fff;padding:15px;font-size:12px;margin-top:20px}
+</style>
+</head>
+<body>
+
+<!-- 🔊 Auto Play Musik -->
+<audio id="bgMusic" autoplay loop>
+  <source src="pargoy.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// Autoplay fix untuk browser
+window.addEventListener('click',()=>{
+  let audio=document.getElementById('bgMusic');
+  if(audio.paused){ audio.play(); }
+});
+// 🎧 Tombol Musik
+function toggleMusic(){
+  let audio=document.getElementById('bgMusic');
+  let btn=document.getElementById('musicBtn');
+  if(audio.paused){
+    audio.play();
+    btn.innerText='🔊 Musik ON';
+  }else{
+    audio.pause();
+    btn.innerText='🔇 Musik OFF';
+  }
+}
+</script>
+
+<!-- Tombol Musik -->
+<div style="position:fixed;bottom:20px;right:20px;z-index:999">
+<button id="musicBtn" onclick="toggleMusic()" style="padding:10px 15px;border:none;border-radius:20px;background:#ff5722;color:#fff;font-weight:bold;box-shadow:0 3px 8px rgba(0,0,0,0.3)">
+🔊 Musik ON
+</button>
+</div>
+
+<header>
+<img src="logo.jpeg">
+<div class="search"><input id="search" onkeyup="searchProduct()" placeholder="Cari Produk..."></div>
+</header>
+
+<nav>
+<button onclick="showPage('dashboard')">🏠 Dashboard</button>
+<button onclick="showPage('tv')">📺 LED TV</button>
+<button onclick="showPage('speaker')">🔊 Speaker</button>
+<button onclick="showPage('aksesoris')">🧰 Aksesoris</button>
+</nav>
+
+<div class="container" id="content"></div>
+
+<script>
+const products = [
+// TV LENGKAP (gunakan gambar sendiri di folder /img/tv/)
+{name:"Xiaomi 32 QLED",price:"Rp2.399.000",old:"Rp2.599.000",cat:"tv",sold:"1500+",img:"img/tv/xiaomi32.jpg"},
+{name:"SPC 32 QLED",price:"Rp2.199.000",cat:"tv",sold:"390+",img:"img/tv/spc32.jpg"},
+{name:"TCL 32 QLED",price:"Rp2.399.000",old:"Rp2.599.000",cat:"tv",sold:"850+",img:"img/tv/tcl32.jpg"},
+{name:"Coocaa 32 Smart",price:"Rp1.850.000",cat:"tv",sold:"2000+",img:"img/tv/coocaa32s.jpg"},
+{name:"Coocaa 32 QLED",price:"Rp2.199.000",cat:"tv",sold:"1000+",img:"img/tv/coocaa32q.jpg"},
+{name:"SHARP 32",price:"Rp2.199.000",cat:"tv",sold:"1000+",img:"img/tv/sharp32.jpg"},
+{name:"Xiaomi 43 A 2026",price:"Rp3.099.000",cat:"tv",sold:"800+",img:"img/tv/xiaomi43.jpg"},
+{name:"TCL 43 QLED",price:"Rp3.299.000",cat:"tv",sold:"755+",img:"img/tv/tcl43.jpg"},
+{name:"SPC 43 QLED",price:"Rp4.199.000",cat:"tv",sold:"670+",img:"img/tv/spc43.jpg"},
+{name:"Sharp 43 QLED",price:"Rp3.899.000",cat:"tv",sold:"500+",img:"img/tv/sharp43.jpg"},
+{name:"Coocaa 43 QLED",price:"Rp3.350.000",cat:"tv",sold:"650+",img:"img/tv/coocaa43.jpg"},
+{name:"Panasonic 43 OLED",price:"Rp5.350.000",cat:"tv",sold:"650+",img:"img/tv/panasonic43.jpg"},
+{name:"TCL 50 QLED",price:"Rp5.500.000",cat:"tv",sold:"400+",img:"img/tv/tcl50.jpg"},
+{name:"Xiaomi 55 QLED",price:"Rp5.900.000",cat:"tv",sold:"300+",img:"img/tv/xiaomi55.jpg"},
+{name:"SPC 55 QLED",price:"Rp6.900.000",cat:"tv",sold:"200+",img:"img/tv/spc55.jpg"},
+{name:"Coocaa 55 QLED",price:"Rp5.100.000",cat:"tv",sold:"250+",img:"img/tv/coocaa55.jpg"},
+{name:"Samsung 55 QLED",price:"Rp9.000.000",cat:"tv",sold:"150+",img:"img/tv/samsung55.jpg"},
+{name:"Panasonic 55 OLED",price:"Rp13.000.000",cat:"tv",sold:"150+",img:"img/tv/panasonic55.jpg"},
+{name:"Sharp 60 4K",price:"Rp8.100.000",cat:"tv",sold:"10+",img:"img/tv/sharp60.jpg"},
+{name:"TCL 65 4K",price:"Rp8.000.000",cat:"tv",sold:"100+",img:"img/tv/tcl65.jpg"},
+{name:"Xiaomi 65 4K",price:"Rp7.999.000",cat:"tv",sold:"1200+",img:"img/tv/xiaomi65.jpg"},
+{name:"Xiaomi 75 4K",price:"Rp10.999.000",cat:"tv",sold:"500+",img:"img/tv/xiaomi75.jpg"},
+{name:"Panasonic 75 4K",price:"Rp13.999.000",cat:"tv",sold:"500+",img:"img/tv/panasonic75.jpg"},
+{name:"Xiaomi 100 8K",price:"Rp35.499.000",cat:"tv",sold:"20+",img:"img/tv/xiaomi100.jpg"},
+
+// SPEAKER (folder /img/speaker/)
+{name:"Blackspider 1501AP",price:"Rp2.600.000",cat:"speaker",sold:"80+",img:"img/speaker/blackspider1501.jpg"},
+{name:"Blackspider GT15",price:"Rp2.600.000",cat:"speaker",sold:"800+",img:"img/speaker/blackspidergt15.jpg"},
+{name:"Blackspider BX715",price:"Rp2.600.000",cat:"speaker",sold:"800+",img:"img/speaker/blackspiderbx715.jpg"},
+{name:"Crimson CR15",price:"Rp2.400.000",cat:"speaker",sold:"70+",img:"img/speaker/crimsoncr15.jpg"},
+{name:"Polytron PAS PRO 15F3",price:"Rp2.900.000",cat:"speaker",sold:"60+",img:"img/speaker/polytronf3.jpg"},
+{name:"Polytron PAS PRO 15F5",price:"Rp2.300.000",cat:"speaker",sold:"50+",img:"img/speaker/polytronf5.jpg"},
+{name:"Huper JS10",price:"Rp3.500.000",cat:"speaker",sold:"240+",img:"img/speaker/huperjs10.jpg"},
+{name:"Huper NX15",price:"Rp5.100.000",cat:"speaker",sold:"35+",img:"img/speaker/hupernx15.jpg"},
+{name:"Baretone MAX15NB",price:"Rp4.450.000",cat:"speaker",sold:"30+",img:"img/speaker/baretonenb.jpg"},
+{name:"Baretone MAX15MHWR",price:"Rp2.850.000",cat:"speaker",sold:"125+",img:"img/speaker/baretonemhwr.jpg"},
+{name:"JBL Partybox 310",price:"Rp6.500.000",cat:"speaker",sold:"100+",img:"img/speaker/jbl310.jpg"},
+{name:"NIKO PT1501",price:"Rp1.300.000",cat:"speaker",sold:"100+",img:"img/niko1501.jpg"},
+{name:"NIKO PT1502",price:"Rp1.300.000",cat:"speaker",sold:"100+",img:"img/niko1502.jpg"},
+{name:"NIKO PT1503",price:"Rp1.400.000",cat:"speaker",sold:"100+",img:"img/niko1503.jpg"},
+{name:"NIKO PT1504",price:"Rp1.500.000",cat:"speaker",sold:"100+",img:"img/niko1504.jpg"},
+{name:"NIKO Oxxo12",price:"Rp1.500.000",cat:"speaker",sold:"100+",img:"img/nikoOxxo12.jpg"},
+{name:"NIKO Oxxo15",price:"Rp1.500.000",cat:"speaker",sold:"100+",img:"img/nikoOxxo15.jpg"},
+{name:"Tanaka 12",price:"Rp1.700.000",cat:"speaker",sold:"100+",img:"img/tanaka12.jpg"},
+{name:"Noise 15",price:"Rp3.200.000",cat:"speaker",sold:"100+",img:"img/noise15j.jpg"},
+
+// AKSESORIS (folder /img/aksesoris/)
+{name:"Antena Pelor",price:"Rp129.000",cat:"aksesoris",sold:"30000+",img:"img/aksesoris/pelor.jpg"},
+{name:"Antena Intra",price:"Rp149.000",cat:"aksesoris",sold:"25000+",img:"img/aksesoris/intra.jpg"},
+{name:"Antena PX",price:"Rp399.000",cat:"aksesoris",sold:"20000+",img:"img/aksesoris/px.jpg"},
+{name:"Antena Advance",price:"Rp219.000",cat:"aksesoris",sold:"1800+",img:"img/aksesoris/advance.jpg"},
+{name:"Antena Ruby",price:"Rp199.000",cat:"aksesoris",sold:"1500+",img:"img/aksesoris/ruby.jpg"},
+{name:"Anti Gores 32",price:"Rp149.000",cat:"aksesoris",sold:"2000+",img:"img/aksesoris/antigores32.jpg"},
+{name:"Anti Gores 43",price:"Rp249.000",cat:"aksesoris",sold:"1800+",img:"img/aksesoris/antigores43.jpg"},
+{name:"Anti Gores 55",price:"Rp449.000",cat:"aksesoris",sold:"1200+",img:"img/aksesoris/antigores55.jpg"},
+{name:"Anti Gores 65",price:"Rp549.000",cat:"aksesoris",sold:"1000+",img:"img/aksesoris/antigores65.jpg"},
+{name:"Bracket 14-24",price:"Rp49.000",cat:"aksesoris",sold:"3000+",img:"img/aksesoris/bracket14.jpg"},
+{name:"Bracket 24-32",price:"Rp69.000",cat:"aksesoris",sold:"2800+",img:"img/aksesoris/bracket32.jpg"},
+{name:"Bracket 32-43",price:"Rp89.000",cat:"aksesoris",sold:"2600+",img:"img/aksesoris/bracket43.jpg"},
+{name:"Bracket 43-50",price:"Rp109.000",cat:"aksesoris",sold:"2000+",img:"img/aksesoris/bracket50.jpg"},
+{name:"Bracket 50-65",price:"Rp209.000",cat:"aksesoris",sold:"1500+",img:"img/aksesoris/bracket65.jpg"},
+];
+
+
+function waLink(name){
+return `https://wa.me/6289649130717?text=Saya mau pesan ${name}`;
+}
+
+function render(list){
+return `<div class='grid'>${list.map(p=>`
+<div class='card'>
+<div class='badge'>🔥</div>
+<img src='${p.img}'>
+<h4>${p.name}</h4>
+<div class='old'>${p.old||''}</div>
+<div class='price'>${p.price}</div>
+<div class='rating'>★★★★★</div>
+<div class='sold'>Terjual ${p.sold}</div>
+<a class='btn' href='${waLink(p.name)}'>Pesan</a>
+</div>`).join('')}</div>`;
+}
+
+function searchProduct(){
+let key=document.getElementById('search').value.toLowerCase();
+let result=products.filter(p=>p.name.toLowerCase().includes(key));
+document.getElementById('content').innerHTML=render(result);
+}
+
+function showPage(page){
+let html="";
+
+if(page==='dashboard'){
+html=`<div class='banner'>
+<div onclick="showPage('tv')"><img src='https://cdn-icons-png.flaticon.com/512/727/727245.png'><p>📺 TV</p></div>
+<div onclick="showPage('speaker')"><img src='https://cdn-icons-png.flaticon.com/512/727/727245.png'><p>🔊 Speaker</p></div>
+<div onclick="showPage('aksesoris')"><img src='https://cdn-icons-png.flaticon.com/512/2921/2921822.png'><p>🧰 Aksesoris</p></div>
+</div>
+
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Official Brand</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+    }
+
+    .brand-section {
+        max-width: 1000px;
+        margin: auto;
+    }
+
+    .brand-title {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .brand-container {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .brand-box {
+        flex: 1;
+        min-width: 150px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+    }
+
+    .brand-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .brand-box img {
+        max-width: 120px;
+        max-height: 40px;
+        object-fit: contain;
+    }
+</style>
+</head>
+<body>
+
+<div class="brand-section">
+    <div class="brand-title">Official Brand</div>
+
+    <div class="brand-container">
+        <div class="brand-box">
+            <img src="./img/brand/xiaomi.png" alt="Xiaomi">
+        </div>
+
+        <div class="brand-box">
+            <img src="./img/brand/crimson.png" alt="Crimson">
+        </div>
+
+        <div class="brand-box">
+            <img src="./img/brand/coocaa.png" alt="Coocaa">
+        </div>
+
+        <div class="brand-box">
+            <img src="./img/brand/tcl.png" alt="TCL">
+        </div>
+
+                <div class="brand-box">
+            <img src="./img/brand/Sharp.png" alt="Sharp">
+        </div>
+
+        <div class="brand-box">
+            <img src="./img/brand/polytron.png" alt="Polytron">
+        </div>
+
+
+        <div class="brand-box">
+            <img src="./img/brand/spc.png" alt="SPC">
+        </div>
+
+
+        <div class="brand-box">
+            <img src="./img/brand/blackspider.png" alt="Black Spider">
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+<h3>🔥 Produk Terlaris</h3>
+${render(products.slice(0,9))}`;
+}
+
+
+if(page==='tv') html=render(products.filter(p=>p.cat==='tv'));
+if(page==='speaker') html=render(products.filter(p=>p.cat==='speaker'));
+if(page==='aksesoris') html=render(products.filter(p=>p.cat==='aksesoris'));
+
+document.getElementById('content').innerHTML=html;
+}
+
+showPage('dashboard');
+</script>
+
+<!-- FOOTER PRO -->
+<style>
+.footer-pro{
+  background:#1f6ea5;
+  color:#fff;
+  padding:30px 20px;
+}
+
+.footer-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+
+.footer-pro h3{
+  margin-bottom:10px;
+  font-size:16px;
+}
+
+.footer-pro p{
+  margin:5px 0;
+  font-size:13px;
+  opacity:0.9;
+  cursor:pointer;
+}
+
+.footer-pro p:hover{
+  opacity:1;
+  text-decoration:underline;
+}
+
+.app{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.app img{
+  height:50px;
+}
+
+.sosmed{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.sosmed span{
+  width:35px;
+  height:35px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#2c85c7;
+  border-radius:50%;
+  font-size:14px;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.sosmed span:hover{
+  background:#ff5722;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+  .footer-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
+
+
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Added Value</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#f5f5f5;
+}
+
+.section{
+  text-align:center;
+  padding:40px 20px;
+  background:#fff;
+}
+
+.section h2{
+  font-size:28px;
+  letter-spacing:2px;
+  margin-bottom:40px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap:30px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.item{
+  text-align:center;
+}
+
+.icon{
+  width:60px;
+  height:60px;
+  border:2px solid #1e73be;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 15px;
+  color:#1e73be;
+  font-size:24px;
+}
+
+.item h4{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.item p{
+  font-size:11px;
+  color:#555;
+  line-height:1.4;
+}
+</style>
+</head>
+
+<body>
+
+<section class="section">
+  <h2>ADDED VALUE</h2>
+
+  <div class="grid">
+
+    <div class="item">
+      <div class="icon">🛡️</div>
+      <h4>ORIGINAL PRODUCT &<br>OFFICIAL WARRANTY</h4>
+      <p>Produk asli dengan garansi resmi.</p>
+    </div>
+
+    <div class="item">
+      <div class="icon">🚚</div>
+      <h4>FREE DELIVERY &<br>INSTALLATION</h4>
+      <p>Gratis pengiriman & pemasangan.</p>
+    </div>
+
+    <div class="item">
+      <div class="icon">💳</div>
+      <h4>INSTALLMENT & COMPLETE<br>PAYMENT OPTIONS</h4>
+      <p>Cicilan 0% dan banyak metode pembayaran.</p>
+    </div>
+
+    <div class="item">
+      <div class="icon">🏅</div>
+      <h4>PREMIUM SERVICES</h4>
+      <p>Layanan terbaik, cepat & bergaransi.</p>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
+
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Metode Pembayaran</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    margin: 0;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Judul */
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: #333;
+}
+
+/* Container */
+.payment-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Card */
+.card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Logo */
+.card img {
+    max-width: 120px;
+    height: 60px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+/* Nama */
+.card h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* Tombol */
+.btn {
+    background: #ff1e63;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #e01452;
+}
+</style>
+
+</head>
+<body>
+
+<div class="title">Pilih Salah Satu Metode Pembayaran</div>
+
+<div class="payment-container">
+
+    <!-- BCA -->
+    <div class="card">
+        <img src="./img/payment/bca.png">
+        <h3>BCA Virtual Account</h3>
+        <button class="btn">PILIH</button>
+    </div>
+
+    <!-- GOPAY -->
+    <div class="card">
+        <img src="./img/payment/Spay.png">
+        <h3>Shopee Pay</h3>
+        <button class="btn">PILIH</button>
+    </div>
+
+    <!-- BNI -->
+    <div class="card">
+        <img src="./img/payment/bni.png">
+        <h3>BNI Virtual Account</h3>
+        <button class="btn">PILIH</button>
+    </div>
+
+</div>
+
+</body>
+</html>
+
+<div class="footer-pro">
+  <div class="footer-grid">
+
+    <!-- Layanan -->
+    <div>
+      <h3>Layanan Pelanggan</h3>
+      <p>Setiap Hari 09.00 - 22.00 WIB</p>
+      <p>📞 0896-4913-0717</p>
+      <p>📱 0812-1923-2214</p>
+      <p>✉️ omegaelektronik@gmail.com</p>
+    </div>
